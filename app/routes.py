@@ -28,15 +28,10 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/')
-
 @app.route('/index')
-def index():
-    def index():
-    # ...
-    return render_template("index.html", title='Home Page')
-
 @login_required
 def index():
+    return render_template("index.html", title='Home Page')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
