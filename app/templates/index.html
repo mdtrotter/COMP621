@@ -9,22 +9,34 @@
         <table>
             <thead>
                <tr>
+                  <th></th>
                   <th>ID</th>
-                  <th>Faculty</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Pass_Hash</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Banner ID</th>
+                  <th>Address</th>
+                  <th>Phone Number</th>
+                  <th>GPA</th>
+                  <th>Credit Total</th>
                </tr>
             </thead>
    
             <tbody>
                {% for users in user %}
                   <tr>
-                     <td>{{ users.id }}</td>
-                     <td>{{ users.faculty }}</td>
-                     <td>{{ users.username }}</td>
-                     <td>{{ users.email }}</td>
-                     <td>{{ users.password_hash }}</td>
+                     <td><a href="{{ url_for('edit', id=users.id) }}">Edit</a></td>
+                     {% for students in student %}
+                     {% if students.student_id == users.id %}
+                     <td>{{ students.id }}</td>
+                     <td>{{ students.firstName }}</td>
+                     <td>{{ students.lastName }}</td>
+                     <td>{{ students.bannerID }}</td>
+                     <td>{{ students.address }}</td>
+                     <td>{{ students.phone }}</td>
+                     <td>{{ students.gpa }}</td>
+                     <td>{{ students.creditTotal }}</td>
+                     {% endif %}
+                     {% endfor %}
                   </tr>
                {% endfor %}
             </tbody>
@@ -32,6 +44,26 @@
 
         {% else %}
         {{ current_user.username }}
+
+        <table>
+         <thead>
+            <tr>
+               <th>First Name</th>
+               <th>Last Name</th>
+               <th>Banner ID</th>
+               <th>Address</th>
+               <th>Phone Number</th>
+               <th>GPA</th>
+               <th>Credit Total</th>
+            </tr>
+         </thead>
+
+         <tbody>
+               <tr>
+                  
+               </tr>
+         </tbody>
+      </table>
         {% endif %}
     </h1>
 {% endblock %}
