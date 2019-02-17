@@ -2,10 +2,12 @@ from app import login, db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+#get user information from database based on id
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
 
+#Database table for Users
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     faculty = db.Column(db.Boolean)
@@ -14,15 +16,19 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     student = db.relationship('Student', backref='student')
 
+    #takes password and creates hash, then saves it 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
+    #checks password hash against password
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    #defines what calling user object will return (in termainal)
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+#defines student table in database (includes foreign key to User table)
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(64), index=True)

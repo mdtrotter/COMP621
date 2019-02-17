@@ -5,15 +5,20 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Student
 from werkzeug.urls import url_parse
 
+#Defines routing when calling url '/' or '/index'
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html', title='Home Page', user=User.query.all(), student=Student.query.all())
 
+#Defines routing when calling '/index' and passing an argument through GET
 @app.route('/index/<id>')
 def index2(id):
     return render_template('index.html', title='Home Page', student=Student.query.filter_by(student_id=id).first(), user=User.query.filter_by(id=id).first())
 
+#Defines routing for '/login'
+#Present login form, or if already login sends user to index page
+#Handles unsuccessful login attempt and checks if logged in user is faculy or student
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -31,11 +36,14 @@ def login():
             return redirect(url_for('index', id=user.id))
     return render_template('login.html', title='Sign In', form=form)
 
+#Defines routing for logging user out
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
+#Defines routing for registration
+#shows registration form and creates and places new user in the database
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -47,6 +55,9 @@ def register():
         return redirect(url_for('index'))
     return render_template('register.html', title='Register', form=form)
 
+#Defines routing for edit page
+#Shows form for student in database by querying Student table with id
+#Handles two different cases depending if student table has information with designated id or not
 @app.route('/edit/<id>', methods=['GET', 'POST'])
 def edit(id):
     student = Student.query.filter_by(student_id=id).first()
