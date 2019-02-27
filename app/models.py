@@ -1,6 +1,8 @@
 from app import login, db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.sql import func
+from sqlalchemy.types import DateTime
 
 #get user information from database based on id
 @login.user_loader
@@ -39,3 +41,8 @@ class Student(db.Model):
     gpa = db.Column(db.String(64))
     creditTotal = db.Column(db.String(64))
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class Time(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    placeholder  = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime(timezone=True), onupdate = func.now())
