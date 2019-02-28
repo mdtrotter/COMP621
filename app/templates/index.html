@@ -26,10 +26,10 @@
                {% for users in user %}
                   <tr>
                      <td><a href="{{ url_for('edit', id=users.id) }}">Edit</a></td>
+                     <td>{{ users.id }}</td>
+                     <td>{{ users.username }}</td>
                      {% for students in student %}
                      {% if students.student_id == users.id %}
-                     <td>{{ students.id }}</td>
-                     <td>{{ students.student.username }}</td>
                      <td>{{ students.firstName }}</td>
                      <td>{{ students.lastName }}</td>
                      <td>{{ students.bannerID }}</td>
@@ -65,11 +65,11 @@
 
          <tbody>
             <tr>
+               <td>{{ current_user.id }}</td>
+               <td>{{ current_user.username }}</td>
                {% for students in student %}
                {% if students.student.id == current_user.id %}
                <td><a href="{{ url_for('edit', id=students.student.id) }}">Edit</a></td>
-                  <td>{{ students.id }}</td>
-                  <td>{{ students.student.username }}</td>
                   <td>{{ students.firstName }}</td>
                   <td>{{ students.lastName }}</td>
                   <td>{{ students.bannerID }}</td>
