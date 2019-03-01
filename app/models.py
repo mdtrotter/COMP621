@@ -45,4 +45,5 @@ class Student(db.Model):
 class Time(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     placeholder  = db.Column(db.Integer)
-    timestamp = db.Column(db.DateTime(timezone=True), onupdate = func.now())
+    created = db.Column(db.DateTime, server_default = db.func.now())
+    timestamp = db.Column(db.DateTime(timezone=True), server_default = db.func.now(), onupdate = db.func.now())

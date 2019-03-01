@@ -10,9 +10,13 @@ from werkzeug.urls import url_parse
 @app.route('/index')
 def index():
     if current_user.is_authenticated:
-        clock = Time.query.filter_by(id = 1).first()
-        clock.placeholder = 1
-        return render_template('index.html', title='Home Page', user=User.query.all(), student=Student.query.all(), time=Time.query.all())
+        clock = Time.query.filter_by(id=1).first()
+        clock.placeholder += 1
+        #clock = Time.query.filter_by(id=1).first()
+        #clock.placholder = 1
+        db.session.add(clock)
+        db.session.commit()
+        return render_template('index.html', title='Home Page', user=User.query.all(), student=Student.query.all(), time=Time.query.filter_by(id=1).first())
     else:
         return redirect(url_for('login'))
 
