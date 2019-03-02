@@ -2,21 +2,20 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Student, Time
+from app.models import User, Student, LoginTime, EditTime, RegistrationTime
 from werkzeug.urls import url_parse
 
 #Defines routing when calling url '/' or '/index'
 @app.route('/')
 @app.route('/index')
 def index():
+    #check if user is logged in, else send to login page
+    #updates Time table entity to generate new server timestamp and pass to index page with time variable
     if current_user.is_authenticated:
-        clock = Time.query.filter_by(id=1).first()
-        clock.placeholder += 1
-        #clock = Time.query.filter_by(id=1).first()
-        #clock.placholder = 1
-        db.session.add(clock)
-        db.session.commit()
-        return render_template('index.html', title='Home Page', user=User.query.all(), student=Student.query.all(), time=Time.query.filter_by(id=1).first())
+        #db.session.add(LoginTime(placeholder = 1))
+        #db.session.add(EditTime(placeholder = 1))
+        #db.session.add(RegistrationTime(placeholder = 1))
+        return render_template('index.html', title='Home Page', user=User.query.all(), student=Student.query.all(), loginTime = LoginTime.query.filter_by(id = current_user.id).first(), editTime = EditTime.query.filter_by(id = current_user.id).first(), registrationTime = RegistrationTime.query.filter_by(id = current_user.id).first())
     else:
         return redirect(url_for('login'))
 
@@ -24,7 +23,7 @@ def index():
 @app.route('/index/<id>')
 def index2(id):
     if current_user.is_authenticated:
-        return render_template('index.html', title='Home Page', student=Student.query.filter_by(student_id=id).first(), user=User.query.filter_by(id=id).first())
+        return render_template('index.html', title='Home Page', student=Student.query.filter_by(id=current_user.id).first(), user=User.query.filter_by(id=current_user.id).first(), loginTime = LoginTime.query.filter_by(id = current_user.id).first(), editTime = EditTime.query.filter_by(id = current_user.id).first(), registrationTime = RegistrationTime.query.filter_by(id = current_user.id).first())
     else:
         return redirect(url_for('login'))
 
@@ -42,6 +41,12 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user)
+
+        clock = LoginTime.query.filter_by(id = current_user.id).first()
+        clock.placeholder += 1
+        db.session.add(clock)
+        db.session.commit()
+
         if user.faculty:
             return redirect(url_for('index'))
         else:
@@ -63,8 +68,17 @@ def register():
         if form.validate_on_submit():
             user = User(username=form.username.data, email=form.email.data, faculty=form.faculty.data)
             user.set_password(form.password.data)
+
             db.session.add(user)
+            db.session.add(Student())
+            db.session.add(LoginTime(placeholder = 1))
+            db.session.add(EditTime(placeholder = 1))
+            db.session.add(RegistrationTime(placeholder = 1))
+            clock = RegistrationTime.query.filter_by(id = current_user.id).first()
+            clock.placeholder += 1
+            db.session.add(clock)
             db.session.commit()
+
             return redirect(url_for('index'))
         return render_template('register.html', title='Register', form=form)
     else:
@@ -77,6 +91,12 @@ def register():
 def edit(id):
     if current_user.is_authenticated:
         student = Student.query.filter_by(student_id=id).first()
+
+        clock = EditTime.query.filter_by(id = current_user.id).first()
+        clock.placeholder += 1
+        db.session.add(clock)
+        db.session.commit()
+
         if student != None:
             form = EditForm(obj=student)
             if form.validate_on_submit():
@@ -89,7 +109,10 @@ def edit(id):
                 student = Student( firstName=form.firstName.data, lastName=form.lastName.data, bannerID=form.bannerID.data, address=form.address.data, phone=form.phone.data, gpa=form.gpa.data, creditTotal=form.creditTotal.data, student_id=id )
                 db.session.add(student)
                 db.session.commit()
-                return redirect(url_for('index'))
+                if(current_user.faculty == True):
+                    return redirect(url_for('index'))
+                else:
+                    return redirect(url_for('index', id = current_user.id))
         return render_template('edit.html', title='Edit', form=form)
     else:
         return redirect(url_for('login'))

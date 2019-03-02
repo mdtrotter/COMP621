@@ -42,7 +42,19 @@ class Student(db.Model):
     creditTotal = db.Column(db.String(64))
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-class Time(db.Model):
+class LoginTime(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    placeholder  = db.Column(db.Integer)
+    created = db.Column(db.DateTime, server_default = db.func.now())
+    timestamp = db.Column(db.DateTime(timezone=True), server_default = db.func.now(), onupdate = db.func.now())
+
+class EditTime(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    placeholder  = db.Column(db.Integer)
+    created = db.Column(db.DateTime, server_default = db.func.now())
+    timestamp = db.Column(db.DateTime(timezone=True), server_default = db.func.now(), onupdate = db.func.now())
+
+class RegistrationTime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     placeholder  = db.Column(db.Integer)
     created = db.Column(db.DateTime, server_default = db.func.now())

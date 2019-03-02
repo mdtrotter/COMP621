@@ -3,8 +3,11 @@
 {% block content %}
     <h1>Hi, 
         {% if current_user.faculty %}
-        Faculty {{ current_user.username }}
-        Timestamp: {{ time.timestamp }}
+        Faculty {{ current_user.username }}</br>
+        Last Login: {{ loginTime.timestamp }}</br>
+        Last Edit: {{ editTime.timestamp }}</br>
+        Last Registration: {{ registrationTime.timestamp }}
+      
         <p><a href="{{ url_for('register') }}">Click to Register New User!</a></p>
         
         <table>
@@ -47,7 +50,9 @@
 
         {% else %}
         {{ current_user.username }}
-        Timestamp: {{ time.timestamp }}
+        Last Login: {{ loginTime.timestamp }}</br>
+        Last Edit: {{ editTime.timestamp }}</br>
+        Last Registration: {{ registrationTime.timestamp }}
 
         <table>
          <thead>
@@ -66,21 +71,22 @@
          </thead>
 
          <tbody>
+            
             <tr>
+               <td><a href="{{ url_for('edit', id=current_user.id) }}">Edit</a></td>
                <td>{{ current_user.id }}</td>
                <td>{{ current_user.username }}</td>
                {% for students in student %}
-               {% if students.student.id == current_user.id %}
-               <td><a href="{{ url_for('edit', id=students.student.id) }}">Edit</a></td>
-                  <td>{{ students.firstName }}</td>
-                  <td>{{ students.lastName }}</td>
-                  <td>{{ students.bannerID }}</td>
-                  <td>{{ students.address }}</td>
-                  <td>{{ students.phone }}</td>
-                  <td>{{ students.gpa }}</td>
-                  <td>{{ students.creditTotal }}</td>
-               {% endif %}
-               {% endfor %}
+               {% if students.student_id == current_user.id %}
+               <td>{{ students.firstName }}</td>
+               <td>{{ students.lastName }}</td>
+               <td>{{ students.bannerID }}</td>
+               <td>{{ students.address }}</td>
+               <td>{{ students.phone }}</td>
+               <td>{{ students.gpa }}</td>
+               <td>{{ students.creditTotal }}</td>
+               {%endif%}
+               {%endfor%}
             </tr>
          </tbody>
       </table>
