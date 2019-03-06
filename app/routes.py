@@ -10,11 +10,7 @@ from werkzeug.urls import url_parse
 @app.route('/index')
 def index():
     #check if user is logged in, else send to login page
-    #updates Time table entity to generate new server timestamp and pass to index page with time variable
     if current_user.is_authenticated:
-        #db.session.add(LoginTime(placeholder = 1))
-        #db.session.add(EditTime(placeholder = 1))
-        #db.session.add(RegistrationTime(placeholder = 1))
         return render_template('index.html', title='Home Page', user=User.query.all(), student=Student.query.all(), loginTime = LoginTime.query.filter_by(id = current_user.id).first(), editTime = EditTime.query.filter_by(id = current_user.id).first(), registrationTime = RegistrationTime.query.filter_by(id = current_user.id).first())
     else:
         return redirect(url_for('login'))
@@ -42,6 +38,7 @@ def login():
             return redirect(url_for('login'))
         login_user(user)
 
+        #create new timestamp for user
         clock = LoginTime.query.filter_by(id = current_user.id).first()
         clock.placeholder += 1
         db.session.add(clock)
@@ -69,6 +66,7 @@ def register():
             user = User(username=form.username.data, email=form.email.data, faculty=form.faculty.data)
             user.set_password(form.password.data)
 
+            #creates new rows in all tables related to newly created user
             db.session.add(user)
             db.session.add(Student())
             db.session.add(LoginTime(placeholder = 1))
