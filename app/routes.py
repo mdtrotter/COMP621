@@ -5,6 +5,42 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Student, LoginTime, EditTime, RegistrationTime
 from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_recaptcha import ReCaptcha
+from functools import wraps
+import requests
+
+def check_recaptcha(f):
+    """
+    Checks Google  reCAPTCHA.
+
+    :param f: view function
+    :return: Function
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        request.recaptcha_is_valid = None
+
+        if request.method == 'POST':
+            data = {
+                'secret': '6LelApgUAAAAAECZvdK2yjvvQp-2wSDDkAAjPee6',
+                'response': request.form.get('g-recaptcha-response'),
+                'remoteip': request.access_route[0]
+            }
+            r = requests.post(
+                "https://www.google.com/recaptcha/api/siteverify",
+                data=data
+            )
+            result = r.json()
+
+            if result['success']:
+                request.recaptcha_is_valid = True
+            else:
+                request.recaptcha_is_valid = False
+                flash('Invalid reCAPTCHA. Please try again.', 'error')
+
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 #Defines routing when calling url '/' or '/index'
 @app.route('/')
@@ -28,11 +64,12 @@ def index2(id):
 #Present login form, or if already login sends user to index page
 #Handles unsuccessful login attempt and checks if logged in user is faculy or student
 @app.route('/login', methods=['GET', 'POST'])
+@check_recaptcha
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit() and request.recaptcha_is_valid:
         user = User.query.all()
         for users in user:
             if users is None or not users.check_username(form.username.data) or not users.check_password(form.password.data):
