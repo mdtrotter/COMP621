@@ -4,6 +4,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Student, LoginTime, EditTime, RegistrationTime
 from werkzeug.urls import url_parse
+from werkzeug.security import generate_password_hash, check_password_hash
 
 #Defines routing when calling url '/' or '/index'
 @app.route('/')
@@ -32,22 +33,23 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        login_user(user)
+        user = User.query.all()
+        for users in user:
+            if users is None or not users.check_username(form.username.data) or not users.check_password(form.password.data):
+                flash('Invalid username or password')
+                return redirect(url_for('login'))
+            login_user(users)
 
-        #create new timestamp for user
-        clock = LoginTime.query.filter_by(id = current_user.id).first()
-        clock.placeholder += 1
-        db.session.add(clock)
-        db.session.commit()
+            #create new timestamp for user
+            clock = LoginTime.query.filter_by(id = current_user.id).first()
+            clock.placeholder += 1
+            db.session.add(clock)
+            db.session.commit()
 
-        if user.faculty:
-            return redirect(url_for('index'))
-        else:
-            return redirect(url_for('index', id=user.id))
+            if users.faculty:
+                return redirect(url_for('index'))
+            else:
+                return redirect(url_for('index', id=user.id))
     return render_template('login.html', title='Sign In', form=form)
 
 #Defines routing for logging user out

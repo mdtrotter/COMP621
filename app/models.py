@@ -18,6 +18,12 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     student = db.relationship('Student', backref='student')
 
+    def set_username(self, uname):
+        self.username = generate_password_hash(uname)
+
+    def check_username(self, uname):
+        return check_password_hash(self.username, uname)
+
     #takes password and creates hash, then saves it 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
