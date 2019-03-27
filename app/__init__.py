@@ -9,6 +9,7 @@ from functools import wraps
 
 #creates objects at the initialization of running the app
 app = Flask(__name__)
+
 recaptcha = ReCaptcha(app=app)
 
 app.config.update({'RECAPTCHA_ENABLED': True,
@@ -25,3 +26,7 @@ login.login_view = 'login'
 
 #Import must be here to properly call app object (created in first line above)
 from app import routes, models
+
+if __name__ == "app":
+    context = ('C:/Users/mdtro/WebApp/certs/server.crt', 'C:/Users/mdtro/WebApp/certs/server.key')#certificate and key files
+    app.run(debug=True, ssl_context=context)
